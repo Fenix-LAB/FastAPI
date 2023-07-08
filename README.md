@@ -1,12 +1,12 @@
 # Repositorio test de FastAPI
 
-## Para instalar el modulo de FastAPI se usa el siguiente comando:
+#### Para instalar el modulo de FastAPI se usa el siguiente comando:
 
 ```bash
 pip install fastapi
 ```
 
-## Se debe instalar el servidor de Uvicorn, que es el que nos permite montar el backend
+#### Se debe instalar el servidor de Uvicorn, que es el que nos permite montar el backend
 
 ```bash
 pip install "uvicorn[standard]"
@@ -38,3 +38,7 @@ if __name__ == "__main__":
 
 #### Documentacion de los endpoints en: 
 http://127.0.0.1:8000/docs
+
+## Status code
+- 200: OK
+- 201: Created
