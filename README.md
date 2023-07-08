@@ -29,7 +29,7 @@ def read_root():
 ```bash
 uvicorn server:app --reload
 ```
-#### Para poder correr el servidor con el comando python, se agrega el siguinte codigo:
+#### Para poder lanzar el servidor con el comando python, se agrega el siguinte codigo:
 
 ```python
 if __name__ == "__main__":
@@ -40,5 +40,16 @@ if __name__ == "__main__":
 http://127.0.0.1:8000/docs
 
 ## Status code
+Los endponints nos pueden devolver los siguinetes codigos de status:
 - 200: OK
-- 201: Created
+- 201: CREATED
+- 204: NO CONTENT
+- 400: BAD REQUEST
+- 401: UNAUTHORIZED
+- 403: FORBIDDEN
+- 404: NOT FOUND
+- 405: METHOD NOT ALLOWED
+- 406: NOT ACCEPTABLE
+- 409: CONFLICT
+- 415: UNSUPPORTED MEDIA TYPE
+- 500: INTERNAL SERVER ERROR
