@@ -3,13 +3,17 @@ import uvicorn
 from fastapi import status
 import json
 
-from models.models import Fruit, FruitList
+from schemas.models import Fruit, FruitList
+from config.database import base, engine, session
+from models.fruits import Fruit as FruitTable
+
+base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 # Test de endpoints para llenar una tabla
 
-table_fruits = []
+# table_fruits = []
 
 # Endponit Post para añadir frutas
 @app.post("/create_fruit", status_code=status.HTTP_201_CREATED, response_model=Fruit, summary="Crear nueva lista")
@@ -21,20 +25,25 @@ def add_fruit(Fruit: Fruit):
         - sugar: integrer
 
     """
-    try:
-        new_id = table_fruits[-1].id
+    # try:
+        # new_id = table_fruits[-1].id
         # print(new_id)
-    except:
-        new_id = 0
+    # except:
+    #     new_id = 0
 
     # print(new_id)
     # table_fruits.append({"id":new_id + 1, "name":Fruit.name, "sugar": Fruit.sugar})
     # print(table_fruits)
-    Fruit.id = new_id + 1
-    table_fruits.append(Fruit)
+    # Fruit.id = new_id + 1
+    # table_fruits.append(Fruit)
     # return {"id":new_id + 1, "name":Fruit.name, "sugar": Fruit.sugar}
     # print(table_fruits)
-    return Fruit
+
+    db = session()
+    new_fruit = FruitTable(**Fruit.model_dump())
+    db.add(new_fruit)
+    db.commit()
+    return Fruit.model_dump()
 
 # Endpoint Get para obtener la fruta de algun ID
 @app.get("/all", status_code=status.HTTP_200_OK, response_model=FruitList, summary="Retorna todos los datos")
