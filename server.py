@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi import status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 import json
 
 from schemas.models import Fruit, FruitList
@@ -54,7 +56,10 @@ def get_all_fruits():
 
     """
     # return json.loads(json.dumps(table_fruits))
-    return FruitList(ListF=table_fruits)
+    db = session()
+    result = db.query(FruitTable).all()
+    # return FruitList(ListF=table_fruits)
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(result))
 
 # Endpoint Get para obtener la fruta de algun ID
 @app.get("/{id}", status_code=status.HTTP_200_OK)
@@ -64,12 +69,16 @@ def get_fruit(id_f: int):
         - Return Fruit
 
     """
-    for fruit in table_fruits:
-        if fruit.id == id_f:
-            return fruit 
-
-    return {}
-
+    # for fruit in table_fruits:
+    #     if fruit.id == id_f:
+    #         return fruit 
+    db = session()
+    result = db.query(FruitTable).filter(FruitTable.id == id_f).first()
+    print(result)
+    # return {}
+    if not result:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message":"Fruit not found"})
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(result))
 # Endpoint Delete para eliminar una fruta de la lista
 @app.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete_fruit(id_f: int):
@@ -78,22 +87,38 @@ def delete_fruit(id_f: int):
         - Delete Fruit
 
     """
-    for fruit in table_fruits:
-        if fruit.id == id_f:
-            table_fruits.remove(fruit)
-            return fruit 
+    # for fruit in table_fruits:
+    #     if fruit.id == id_f:
+    #         table_fruits.remove(fruit)
+    #         return fruit 
+    db = session()
+    result = db.query(FruitTable).filter(FruitTable.id == id_f).first()
+    # return {}
+    if not result:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message":"Fruit not found"})
+    
+    db.delete(result)
+    db.commit()
+    return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(result))
 
-    return {}
 
 # Endpoint Patch para actualizar un campo de la tabla
 @app.patch("/{id}", status_code=status.HTTP_200_OK, response_model=Fruit)
-def update_fruit(Fruit: Fruit):
-    for fruit in table_fruits:
-        if fruit.id == Fruit.id:
-            fruit.name = Fruit.name
-            return fruit
-
-    return {}
+def update_fruit(id_f: int, Fruit: Fruit):
+    # for fruit in table_fruits:
+    #     if fruit.id == Fruit.id:
+    #         fruit.name = Fruit.name
+    #         return fruit
+    db = session()
+    result = db.query(FruitTable).filter(FruitTable.id == id_f).first()
+    # return {}
+    if not result:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message":"Fruit not found"})
+    if result:
+        for attr, value in Fruit.model_dump().items():
+            setattr(result, attr, value)
+        db.commit()
+        return JSONResponse(status_code=status.HTTP_200_OK, content=jsonable_encoder(result))
 
 # @app.get("/items/{item_id}")
 # def read_item(item_id: int, q: Union[str, None] = None):

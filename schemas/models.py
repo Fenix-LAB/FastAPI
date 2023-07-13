@@ -3,7 +3,6 @@ from typing import List
 
 
 class Fruit(BaseModel):
-    id: int = Field(default=0)
     name: str
     sugar: int
 
